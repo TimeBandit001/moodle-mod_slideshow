@@ -133,7 +133,13 @@
             'filename'=>'resized_'.$file->get_filename(), 'userid'=>$file->get_userid());
         try {
             // this may fail for various reasons
-            $fs->convert_image($tfile_record, $file, $maxwidth, $maxheight, true);
+            $img = $fs->get_file_by_id($file->get_id());
+            $imageinfo = $img->get_imageinfo();
+            if ($imageinfo['width'] > $maxwidth || $imageinfo['height'] > $maxheight) {
+                $fs->convert_image($tfile_record, $file, $maxwidth, $maxheight, true);
+            } else {
+                $fs->create_file_from_string($tfile_record, $img->get_content());
+            }
         } catch (Exception $e) {
             //oops!
             $img_count=0;
