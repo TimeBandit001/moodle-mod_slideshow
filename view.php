@@ -27,14 +27,19 @@
     $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
 
     require_course_login($course, true, $cm);
-    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
+    $context = context_module::instance($cm->id);
 
 		// If a last read record exists it will match these conditions.
 		$lastreadconditions = array('userid' => $USER->id, 'slideshowid' => $slideshow->id);
 
     if ($img_num == 0) {    // qualifies add_to_log, otherwise every slide view increments log
-        add_to_log($course->id, "slideshow", "view", "view.php?id=$cm->id", "$slideshow->id");
-				
+        $event = \mod_slideshow\event\course_module_viewed::create(array(
+            'context' => context_module::instance($cm->id),
+            'courseid' => $course->id,
+            'objectid' => $slideshow->id
+        ));
+        $event->trigger();
+
 				// If a last read position exists load it.
 				if($lr && $DB->record_exists('slideshow_read_positions', $lastreadconditions)) {
 					$img_num = $DB->get_record('slideshow_read_positions', $lastreadconditions)->slidenumber;
@@ -48,8 +53,8 @@
 
 /// Print header.
     $PAGE->set_url('/mod/slideshow/view.php',array('id' => $cm->id));
-		$PAGE->set_title(get_string('pluginname', 'mod_slideshow') . ': ' . $slideshow->name);
-    $PAGE->set_button($OUTPUT->update_module_button($cm->id, 'slideshow'));
+	$PAGE->set_title(get_string('pluginname', 'mod_slideshow') . ': ' . $slideshow->name);
+
     if ($autoshow) { // auto progress of images, no crumb trail
 			echo '<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>' . $slideshow->name . '</title></head><body>';
         $slideshow->layout = 9; //layout 9 prevents thumbnails being created
@@ -103,7 +108,6 @@
     $maxwidth = $CFG->slideshow_maxwidth;
     $maxheight = $CFG->slideshow_maxheight; 
     $urlroot = $CFG->wwwroot.'/pluginfile.php/'.$context->id.'/mod_slideshow/content/0';
-    //$urlroot = $CFG->wwwroot.'/mod/slideshow/pluginfile.php/'.$context->id.'/mod_slideshow/content/0';
     $baseurl = $urlroot.$showdir;
     $filearray = array();
     $error = '';

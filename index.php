@@ -15,7 +15,11 @@
 
     require_login($course->id);
 
-    add_to_log($course->id, "slideshow", "view all", "index.php?id=$course->id", "");
+    $event = \mod_slideshow\event\course_module_instance_list_viewed::create(array(
+        'context' => context_course::instance($course->id),
+        'objectid' => $course->id
+    ));
+    $event->trigger();
 
 
 /// Get all required strings

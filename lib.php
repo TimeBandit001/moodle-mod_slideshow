@@ -286,7 +286,7 @@
 		function slideshow_save_last_position($slideshow, $user, $slidenumber, $lastreadconditions) {
 			global $DB;
 
-			$lastRead = new object();
+			$lastRead = new stdClass();
 			$lastRead->slideshowid = $slideshow->id;
 			$lastRead->userid = $user->id;
 			$lastRead->slidenumber = $slidenumber;

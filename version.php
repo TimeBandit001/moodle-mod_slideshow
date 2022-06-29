@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version    = 2013030500;
-$plugin->requires   = 2010112400;       // Moodle 2.0
+$plugin->version    = 2022062900;
+$plugin->requires   = 2018120300;       // Moodle 3.6
 $plugin->component  = 'mod_slideshow';
 $plugin->cron       = 0;
